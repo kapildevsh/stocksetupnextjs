@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, Sparkles } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -26,39 +26,53 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 flex flex-col">
       {/* Navbar */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="border-b bg-white/10 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">StockMarket Pro</span>
+            <div className="bg-white p-2 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-purple-600" />
+            </div>
+            <span className="text-xl font-bold text-white">StockMarket Pro</span>
           </Link>
           <Link href="/">
-            <Button variant="ghost">Back to Home</Button>
+            <Button variant="ghost" className="text-white hover:bg-white/20">Back to Home</Button>
           </Link>
         </div>
       </nav>
 
       {/* Login Form */}
       <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome Back</CardTitle>
+        <Card className="w-full max-w-md border-0 shadow-2xl">
+          <div className="h-2 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600"></div>
+          <CardHeader className="text-center bg-gradient-to-r from-purple-50 to-blue-50">
+            <div className="flex justify-center mb-4">
+              <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-full">
+                <Sparkles className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <CardTitle className="text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Welcome Back</CardTitle>
             <CardDescription>Sign in to your account to continue</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
             {/* User Type Selection (For Demo) */}
-            <div className="space-y-3 p-4 bg-muted rounded-lg">
+            <div className="space-y-3 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border-2 border-purple-200">
               <Label className="text-sm font-medium">Select User Type (Demo)</Label>
               <RadioGroup value={userType} onValueChange={setUserType}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="user" id="user" />
-                  <Label htmlFor="user" className="font-normal cursor-pointer">Subscribe User</Label>
+                <div className="flex items-center space-x-2 p-2 hover:bg-white/50 rounded">
+                  <RadioGroupItem value="user" id="user" className="border-purple-600" />
+                  <Label htmlFor="user" className="font-normal cursor-pointer flex-1">
+                    <span className="font-semibold text-purple-700">Subscribe User</span>
+                    <p className="text-xs text-gray-600">Access to full stock data</p>
+                  </Label>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="admin" id="admin" />
-                  <Label htmlFor="admin" className="font-normal cursor-pointer">Admin</Label>
+                <div className="flex items-center space-x-2 p-2 hover:bg-white/50 rounded">
+                  <RadioGroupItem value="admin" id="admin" className="border-orange-600" />
+                  <Label htmlFor="admin" className="font-normal cursor-pointer flex-1">
+                    <span className="font-semibold text-orange-700">Admin</span>
+                    <p className="text-xs text-gray-600">Management dashboard</p>
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
@@ -72,11 +86,12 @@ export default function LoginPage() {
                 placeholder="your.email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="border-purple-200 focus:border-purple-400"
               />
             </div>
 
             {/* Google Login Button */}
-            <Button onClick={handleGoogleLogin} className="w-full" size="lg">
+            <Button onClick={handleGoogleLogin} className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700" size="lg">
               <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
@@ -98,9 +113,9 @@ export default function LoginPage() {
               Continue with Google
             </Button>
 
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link href="/membership" className="text-primary hover:underline">
+              <Link href="/membership" className="text-purple-600 hover:underline font-semibold">
                 Sign up
               </Link>
             </div>
@@ -109,8 +124,8 @@ export default function LoginPage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t bg-muted/50 py-6">
-        <div className="container text-center text-sm text-muted-foreground">
+      <footer className="bg-white/10 backdrop-blur-md py-6">
+        <div className="container text-center text-sm text-white">
           <p>&copy; 2025 StockMarket Pro. All rights reserved.</p>
         </div>
       </footer>
