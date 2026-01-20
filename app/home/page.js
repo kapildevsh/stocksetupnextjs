@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
-import { TrendingUp, LogOut, Search, RefreshCw, TrendingDown } from 'lucide-react'
+import { TrendingUp, LogOut, Search, RefreshCw, TrendingDown, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 // Mock stock data
@@ -44,17 +44,19 @@ export default function HomePage() {
   )
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
       {/* Top Navbar */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <nav className="border-b bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">StockMarket Pro</span>
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">StockMarket Pro</span>
           </div>
           <div className="flex items-center gap-4">
-            <Badge variant="secondary">Subscribe User</Badge>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
+            <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0">Subscribe User</Badge>
+            <Button variant="outline" size="sm" onClick={handleLogout} className="border-purple-200 hover:bg-purple-50">
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>
@@ -67,10 +69,13 @@ export default function HomePage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Stock Market Overview</h1>
-            <p className="text-muted-foreground">Real-time stock data and market information</p>
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Stock Market Overview</h1>
+            <p className="text-gray-600 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-purple-500" />
+              Real-time stock data and market information
+            </p>
           </div>
-          <Button onClick={handleRefresh}>
+          <Button onClick={handleRefresh} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh Data
           </Button>
@@ -78,32 +83,32 @@ export default function HomePage() {
 
         {/* Market Summary Cards */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <Card>
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-700 text-white">
             <CardHeader className="pb-3">
-              <CardDescription>Total Stocks</CardDescription>
-              <CardTitle className="text-2xl">{stocks.length}</CardTitle>
+              <CardDescription className="text-purple-100">Total Stocks</CardDescription>
+              <CardTitle className="text-3xl">{stocks.length}</CardTitle>
             </CardHeader>
           </Card>
-          <Card>
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-500 to-emerald-700 text-white">
             <CardHeader className="pb-3">
-              <CardDescription>Gainers</CardDescription>
-              <CardTitle className="text-2xl text-green-600">
+              <CardDescription className="text-green-100">Gainers</CardDescription>
+              <CardTitle className="text-3xl">
                 {stocks.filter(s => s.change > 0).length}
               </CardTitle>
             </CardHeader>
           </Card>
-          <Card>
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-red-500 to-rose-700 text-white">
             <CardHeader className="pb-3">
-              <CardDescription>Losers</CardDescription>
-              <CardTitle className="text-2xl text-red-600">
+              <CardDescription className="text-red-100">Losers</CardDescription>
+              <CardTitle className="text-3xl">
                 {stocks.filter(s => s.change < 0).length}
               </CardTitle>
             </CardHeader>
           </Card>
-          <Card>
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-cyan-700 text-white">
             <CardHeader className="pb-3">
-              <CardDescription>Avg. Change</CardDescription>
-              <CardTitle className="text-2xl">
+              <CardDescription className="text-blue-100">Avg. Change</CardDescription>
+              <CardTitle className="text-3xl">
                 {(stocks.reduce((acc, s) => acc + s.changePercent, 0) / stocks.length).toFixed(2)}%
               </CardTitle>
             </CardHeader>
@@ -111,54 +116,55 @@ export default function HomePage() {
         </div>
 
         {/* Stock Table */}
-        <Card>
-          <CardHeader>
+        <Card className="border-0 shadow-xl bg-white">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <CardTitle>Live Stock Data</CardTitle>
+                <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Live Stock Data</CardTitle>
                 <CardDescription>Updated stock prices and market data</CardDescription>
               </div>
               <div className="relative w-full md:w-80">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Search stocks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 border-purple-200 focus:border-purple-400"
                 />
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Symbol</TableHead>
-                    <TableHead>Company Name</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
-                    <TableHead className="text-right">Change</TableHead>
-                    <TableHead className="text-right">Change %</TableHead>
-                    <TableHead className="text-right">Volume</TableHead>
-                    <TableHead className="text-right">Market Cap</TableHead>
+                  <TableRow className="bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-100 hover:to-blue-100">
+                    <TableHead className="font-bold">Symbol</TableHead>
+                    <TableHead className="font-bold">Company Name</TableHead>
+                    <TableHead className="text-right font-bold">Price</TableHead>
+                    <TableHead className="text-right font-bold">Change</TableHead>
+                    <TableHead className="text-right font-bold">Change %</TableHead>
+                    <TableHead className="text-right font-bold">Volume</TableHead>
+                    <TableHead className="text-right font-bold">Market Cap</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredStocks.length > 0 ? (
-                    filteredStocks.map((stock) => (
-                      <TableRow key={stock.symbol}>
-                        <TableCell className="font-medium">{stock.symbol}</TableCell>
-                        <TableCell>{stock.name}</TableCell>
-                        <TableCell className="text-right font-medium">${stock.price.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">
+                    filteredStocks.map((stock, index) => (
+                      <TableRow key={stock.symbol} className={index % 2 === 0 ? 'bg-purple-50/30' : 'bg-white'}>
+                        <TableCell className="font-bold text-purple-700">{stock.symbol}</TableCell>
+                        <TableCell className="font-medium">{stock.name}</TableCell>
+                        <TableCell className="text-right font-bold">${stock.price.toFixed(2)}</TableCell>
+                        <TableCell className="text-right font-semibold">
                           <span className={stock.change > 0 ? 'text-green-600' : 'text-red-600'}>
                             {stock.change > 0 ? '+' : ''}{stock.change.toFixed(2)}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
                           <Badge
-                            variant={stock.changePercent > 0 ? 'default' : 'destructive'}
-                            className="gap-1"
+                            className={stock.changePercent > 0 
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 gap-1' 
+                              : 'bg-gradient-to-r from-red-500 to-rose-600 text-white border-0 gap-1'}
                           >
                             {stock.changePercent > 0 ? (
                               <TrendingUp className="h-3 w-3" />
@@ -169,12 +175,12 @@ export default function HomePage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">{stock.volume}</TableCell>
-                        <TableCell className="text-right">{stock.marketCap}</TableCell>
+                        <TableCell className="text-right font-medium">{stock.marketCap}</TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                         No stocks found matching your search.
                       </TableCell>
                     </TableRow>
