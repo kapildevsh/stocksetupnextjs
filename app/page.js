@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Bell, Zap, Sparkles, LineChart, Award } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 export default function LandingPage() {
   return (
@@ -31,7 +32,13 @@ export default function LandingPage() {
             <Link href="/membership" className="text-sm font-medium hover:text-purple-600 transition-colors">
               Membership
             </Link>
-            <Link href="/login">
+            <Link href="/auth">
+              <Button variant="ghost" size="icon" className="relative hover:bg-red-50">
+                <Bell className="h-5 w-5 text-red-600" />
+                <span className="absolute top-1 right-1 h-2 w-2 bg-red-600 rounded-full"></span>
+              </Button>
+            </Link>
+            <Link href="/auth">
               <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">Login</Button>
             </Link>
           </div>
@@ -55,7 +62,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="flex gap-4">
-            <Link href="/login">
+            <Link href="/auth">
               <Button size="lg" className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8">
                 Get Started <ArrowRight className="h-5 w-5" />
               </Button>
@@ -147,7 +154,7 @@ export default function LandingPage() {
               <h3 className="text-3xl font-bold mb-2">Ready to Start Trading?</h3>
               <p className="text-purple-100 text-lg">Join thousands of traders already using our platform</p>
             </div>
-            <Link href="/login">
+            <Link href="/auth">
               <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8">
                 Sign Up Now
               </Button>
