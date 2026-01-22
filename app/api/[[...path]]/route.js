@@ -1,19 +1,15 @@
-import { MongoClient } from 'mongodb'
-import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
 
-// MongoDB connection
-let client
-let db
+// ========================================
+// FASTAPI BACKEND INTEGRATION
+// ========================================
+// This Next.js API route is a proxy to your FastAPI backend
+// All requests will be forwarded to FastAPI backend
+// FastAPI handles PostgreSQL database connections
+// ========================================
 
-async function connectToMongo() {
-  if (!client) {
-    client = new MongoClient(process.env.MONGO_URL)
-    await client.connect()
-    db = client.db(process.env.DB_NAME)
-  }
-  return db
-}
+// MongoDB REMOVED - Using PostgreSQL via FastAPI backend
+// No database connection needed in Next.js frontend
 
 // Helper function to handle CORS
 function handleCORS(response) {
