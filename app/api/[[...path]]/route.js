@@ -25,68 +25,78 @@ export async function OPTIONS() {
   return handleCORS(new NextResponse(null, { status: 200 }))
 }
 
-// Route handler function
+// ========================================
+// ROUTE HANDLER - Proxy to FastAPI Backend
+// ========================================
+// All API requests will be forwarded to your FastAPI backend
+// Configure FASTAPI_URL in .env file
+
+const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8000'
+
 async function handleRoute(request, { params }) {
   const { path = [] } = params
   const route = `/${path.join('/')}`
   const method = request.method
 
   try {
-    const db = await connectToMongo()
-
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/root' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+    // ========================================
+    // EXAMPLE: Proxy to FastAPI Backend
+    // ========================================
+    // Uncomment and modify this code to proxy requests to FastAPI
+    /*
+    const fastApiUrl = `${FASTAPI_URL}/api${route}`
+    
+    // Get request body if present
+    let body
+    if (method !== 'GET' && method !== 'HEAD') {
+      body = await request.text()
     }
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+    
+    // Get JWT token from Authorization header
+    const authHeader = request.headers.get('Authorization')
+    
+    // Forward request to FastAPI
+    const fastApiResponse = await fetch(fastApiUrl, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authHeader && { 'Authorization': authHeader }),
+      },
+      ...(body && { body }),
+    })
+    
+    const data = await fastApiResponse.json()
+    
+    return handleCORS(NextResponse.json(data, { 
+      status: fastApiResponse.status 
+    }))
+    */
+
+    // ========================================
+    // TEMPORARY: Mock Response
+    // ========================================
+    // Remove this once FastAPI backend is ready
+    
+    // Health check endpoint
+    if (route === '/health' && method === 'GET') {
+      return handleCORS(NextResponse.json({ 
+        status: "ok",
+        message: "Next.js API is running. Configure FASTAPI_URL to connect to backend." 
+      }))
     }
 
-    // Status endpoints - POST /api/status
-    if (route === '/status' && method === 'POST') {
-      const body = await request.json()
-      
-      if (!body.client_name) {
-        return handleCORS(NextResponse.json(
-          { error: "client_name is required" }, 
-          { status: 400 }
-        ))
-      }
-
-      const statusObj = {
-        id: uuidv4(),
-        client_name: body.client_name,
-        timestamp: new Date()
-      }
-
-      await db.collection('status_checks').insertOne(statusObj)
-      return handleCORS(NextResponse.json(statusObj))
-    }
-
-    // Status endpoints - GET /api/status
-    if (route === '/status' && method === 'GET') {
-      const statusChecks = await db.collection('status_checks')
-        .find({})
-        .limit(1000)
-        .toArray()
-
-      // Remove MongoDB's _id field from response
-      const cleanedStatusChecks = statusChecks.map(({ _id, ...rest }) => rest)
-      
-      return handleCORS(NextResponse.json(cleanedStatusChecks))
-    }
-
-    // Route not found
-    return handleCORS(NextResponse.json(
-      { error: `Route ${route} not found` }, 
-      { status: 404 }
-    ))
+    // Default response
+    return handleCORS(NextResponse.json({ 
+      message: "Next.js API proxy ready. Configure your FastAPI backend.",
+      route: route,
+      method: method,
+      note: "Uncomment proxy code in route.js to forward requests to FastAPI"
+    }))
 
   } catch (error) {
     console.error('API Error:', error)
     return handleCORS(NextResponse.json(
-      { error: "Internal server error" }, 
+      { error: "Internal server error", details: error.message }, 
       { status: 500 }
     ))
   }
