@@ -1,13 +1,46 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Bell, Zap, Sparkles, LineChart, Award } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { initGoogleAuth, handleGoogleLogin } from '@/lib/googleAuth'
 
 export default function LandingPage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    // Initialize Google OAuth on component mount
+    initGoogleAuth()
+  }, [])
+
+  const onLoginClick = async () => {
+    try {
+      setLoading(true)
+      
+      // Trigger Google OAuth login
+      const response = await handleGoogleLogin()
+      
+      // Redirect based on role from backend
+      const userRole = response.user?.role || 'user'
+      
+      if (userRole === 'admin') {
+        router.push('/admin/dashboard')
+      } else {
+        router.push('/users')
+      }
+    } catch (error) {
+      console.error('Login failed:', error)
+      alert('Login failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
       {/* Navbar */}
@@ -32,15 +65,24 @@ export default function LandingPage() {
             <Link href="/membership" className="text-sm font-medium hover:text-purple-600 transition-colors">
               Membership
             </Link>
-            <Link href="/auth">
-              <Button variant="ghost" size="icon" className="relative hover:bg-red-50">
-                <Bell className="h-5 w-5 text-red-600" />
-                <span className="absolute top-1 right-1 h-2 w-2 bg-red-600 rounded-full"></span>
-              </Button>
-            </Link>
-            <Link href="/auth">
-              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">Login</Button>
-            </Link>
+            <Button variant="ghost" size="icon" className="relative hover:bg-red-50">
+              <Bell className="h-5 w-5 text-red-600" />
+              <span className="absolute top-1 right-1 h-2 w-2 bg-red-600 rounded-full"></span>
+            </Button>
+            <Button 
+              onClick={onLoginClick} 
+              disabled={loading}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                'Login'
+              )}
+            </Button>
           </div>
         </div>
       </nav>
@@ -62,11 +104,14 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="flex gap-4">
-            <Link href="/auth">
-              <Button size="lg" className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8">
-                Get Started <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              onClick={onLoginClick}
+              disabled={loading}
+              className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg px-8"
+            >
+              Get Started <ArrowRight className="h-5 w-5" />
+            </Button>
             <Link href="/membership">
               <Button size="lg" variant="outline" className="text-lg px-8 border-2 border-purple-200 hover:bg-purple-50">
                 View Plans
@@ -154,11 +199,14 @@ export default function LandingPage() {
               <h3 className="text-3xl font-bold mb-2">Ready to Start Trading?</h3>
               <p className="text-purple-100 text-lg">Join thousands of traders already using our platform</p>
             </div>
-            <Link href="/auth">
-              <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8">
-                Sign Up Now
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              onClick={onLoginClick}
+              disabled={loading}
+              className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8"
+            >
+              Sign Up Now
+            </Button>
           </CardContent>
         </Card>
       </section>
@@ -169,6 +217,9 @@ export default function LandingPage() {
           <p>&copy; 2025 StockMarket Pro. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Hidden Google Sign-In Button (for fallback) */}
+      <div id="google-signin-button" className="hidden"></div>
     </div>
   )
 }
