@@ -20,8 +20,9 @@ const menuItems = [
     title: 'Stocks',
     icon: BarChart3,
     links: [
-      { name: 'Swing Trade', href: '/users/swing-trade' },
       { name: 'Intraday', href: '/users/intraday' },
+      { name: 'Swing Trade', href: '/users/swing-trade' },
+      
       { name: 'Option', href: '/users/option' },
       { name: 'Setup', href: '/users/setup' }
     ]
