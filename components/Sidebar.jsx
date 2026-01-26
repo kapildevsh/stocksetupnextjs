@@ -21,6 +21,7 @@ const menuItems = [
     icon: BarChart3,
     links: [
       { name: 'Intraday', href: '/users/intraday' },
+      { name: 'Bullish/Bearish', href: '/users/bullish-bearish-setup' },
       { name: 'Swing Trade', href: '/users/swing-trade' },
       
       { name: 'Option', href: '/users/option' },
