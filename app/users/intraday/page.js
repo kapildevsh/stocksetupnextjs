@@ -43,9 +43,11 @@ export default function IntradayPage() {
         symbol: row.symbol,
         time: new Date(row.createdtime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         LTP: Number(row.eq_lastPrice),
+        gap: Number(row.gap),
         PChange: Number(row.eq_pChange),
         avgInOI: Number(row.avgInOI),
         volume: Number(row.volume),
+        total: Number(row.total),
         status: "Active",
         type: row.eq_pChange >= 0 ? "Long" : "Short"
       }))
@@ -76,8 +78,17 @@ export default function IntradayPage() {
   }, [])
 
   if (loading) {
-    return <div className="p-10 text-xl">Loading live market data...</div>
-  }
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-12 w-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-lg font-semibold text-purple-700">
+          Loading live market data...
+        </div>
+      </div>
+    </div>
+  )
+}
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
@@ -139,6 +150,15 @@ export default function IntradayPage() {
             </CardHeader>
             <CardContent className="p-0">
               <Table>
+                <colgroup>
+    <col className="w-[140px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+  </colgroup>
                 <TableHeader>
                   <TableRow className="bg-gradient-to-r from-purple-100 to-blue-100">
                     <TableHead>Symbol</TableHead>
@@ -147,6 +167,7 @@ export default function IntradayPage() {
                     <TableHead>Price Change (%)</TableHead>
                     <TableHead className="text-right">Avg in OI</TableHead>
                     <TableHead className="text-right">Volume</TableHead>
+                     <TableHead className="text-right">Total Value(Cr)</TableHead>
                     <TableHead className="text-right">Time</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
@@ -157,14 +178,14 @@ export default function IntradayPage() {
                       <TableCell className="font-bold text-purple-700">
                         {trade.symbol}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-left">
                         {trade.LTP.toFixed(2)}
                       </TableCell>
                         <TableCell >
                         <Badge className={trade.type === 'Long'
                           ? 'bg-green-600 text-white'
                           : 'bg-red-600 text-white'}>
-                        {trade.PChange.toFixed(2)}
+                        {trade.gap.toFixed(2)}
                         </Badge>
                       </TableCell>
                       <TableCell >
@@ -179,6 +200,9 @@ export default function IntradayPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         {trade.volume}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {trade.total.toFixed(1)}
                       </TableCell>
 
                       <TableCell className="text-right">{trade.time}</TableCell>

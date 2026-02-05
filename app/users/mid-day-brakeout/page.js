@@ -26,7 +26,7 @@ export default function IntradayPage() {
         return
       }
 
-      const res = await fetch(`${API_BASE}/subscriber/nse/oi-live`, {
+      const res = await fetch(`${API_BASE}/subscriber/intraday/midday-brakeout`, {
         headers: {
           "Authorization": `Bearer ${token}`,
         },
@@ -41,13 +41,15 @@ export default function IntradayPage() {
 
       const mapped = data.map(row => ({
         symbol: row.symbol,
-        time: new Date(row.createdtime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        lot: row.lot ? Number(row.lot) : 0,
+        gap: Number(row.gap),
+        time: new Date(row.update_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         LTP: Number(row.eq_lastPrice),
-        PChange: Number(row.eq_pChange),
-        avgInOI: Number(row.avgInOI),
+        change: Number(row.change),
+        
         volume: Number(row.volume),
         status: "Active",
-        type: row.eq_pChange >= 0 ? "Long" : "Short"
+        type: row.change >= 0 ? "Long" : "Short"
       }))
 
       setIntradayTrades(mapped)
@@ -76,8 +78,17 @@ export default function IntradayPage() {
   }, [])
 
   if (loading) {
-    return <div className="p-10 text-xl">Loading live market data...</div>
-  }
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-12 w-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-lg font-semibold text-purple-700">
+          Loading live market data...
+        </div>
+      </div>
+    </div>
+  )
+}
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
@@ -133,20 +144,29 @@ export default function IntradayPage() {
           <Card className="border-0 shadow-xl">
             <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
               <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Live Intraday Calls
+                Mid Day Breakout Setups
               </CardTitle>
               <CardDescription>Powered by NSE OI data</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
+                <colgroup>
+    <col className="w-[140px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+    <col className="w-[120px]" />
+  </colgroup>
                 <TableHeader>
                   <TableRow className="bg-gradient-to-r from-purple-100 to-blue-100">
                     <TableHead>Symbol</TableHead>
-                    <TableHead>LTP</TableHead>
+                    <TableHead>LOT SIZE</TableHead>
                     <TableHead>GAP (%)</TableHead>
                     <TableHead>Price Change (%)</TableHead>
-                    <TableHead className="text-right">Avg in OI</TableHead>
-                    <TableHead className="text-right">Volume</TableHead>
+                    
+                    <TableHead className="text-left">Volume</TableHead>
                     <TableHead className="text-right">Time</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
@@ -157,29 +177,25 @@ export default function IntradayPage() {
                       <TableCell className="font-bold text-purple-700">
                         {trade.symbol}
                       </TableCell>
-                      <TableCell className="text-right">
-                        {trade.LTP.toFixed(2)}
+                      <TableCell className="text-left">
+                        {trade.lot}
                       </TableCell>
+                       <TableCell className="text-left">
+                        {trade.gap}
+                      </TableCell>
+                     
                         <TableCell >
                         <Badge className={trade.type === 'Long'
                           ? 'bg-green-600 text-white'
                           : 'bg-red-600 text-white'}>
-                        {trade.PChange.toFixed(2)}
+                        {trade.change.toFixed(2)}
                         </Badge>
                       </TableCell>
-                      <TableCell >
-                        <Badge className={trade.type === 'Long'
-                          ? 'bg-green-600 text-white'
-                          : 'bg-red-600 text-white'}>
-                        {trade.PChange.toFixed(2)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {trade.avgInOI.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-left">
                         {trade.volume}
                       </TableCell>
+                      
+                     
 
                       <TableCell className="text-right">{trade.time}</TableCell>
                       
