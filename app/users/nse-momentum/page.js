@@ -25,7 +25,7 @@ export default function IntradayPage() {
         return
       }
 
-      const res = await fetch(`${API_BASE}/subscriber/intraday/midday-brakeout`, {
+      const res = await fetch(`${API_BASE}/subscriber/intraday/momentum-stocks`, {
         headers: {
           "Authorization": `Bearer ${token}`,
         },
@@ -40,11 +40,12 @@ export default function IntradayPage() {
 
       const mapped = data.map(row => ({
         symbol: row.symbol,
-        lot: row.lot ? Number(row.lot) : 0,
-        gap: Number(row.gap),
+        total_score:  Number(row.total_score) ,
+        gap_percent: Number(row.gap_percent),
+        avg_in_oi: Number(row.avg_in_oi),
         time: new Date(row.update_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         LTP: Number(row.eq_lastPrice),
-        change: Number(row.change),
+        price_change_percent: Number(row.price_change_percent),
         
         volume: Number(row.volume),
         status: "Active",
@@ -132,7 +133,7 @@ export default function IntradayPage() {
               <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 Intraday Opportunities
               </h2>
-              <p className="text-gray-600 mt-2">Live NSE OI based signals</p>
+              <p className="text-gray-600 mt-2">Live Most Active Top Gainer / Looser Equity Based signals</p>
             </div>
             <Button onClick={fetchData} className="bg-gradient-to-r from-purple-600 to-blue-600">
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -143,9 +144,9 @@ export default function IntradayPage() {
           <Card className="border-0 shadow-xl">
             <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
               <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Mid Day Breakout Setups
+                Most Active Top Gainer / Looser NSE Momentum Stocks
               </CardTitle>
-              <CardDescription>Powered by NSE OI data</CardDescription>
+              <CardDescription>Powered by NSE Top Gainer / Looser , OI data & Active by Volume , Value</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
@@ -161,7 +162,8 @@ export default function IntradayPage() {
                 <TableHeader>
                   <TableRow className="bg-gradient-to-r from-purple-100 to-blue-100">
                     <TableHead>Symbol</TableHead>
-                    <TableHead>LOT SIZE</TableHead>
+                    <TableHead>Score out of 5</TableHead>
+                    <TableHead>Avg OI Change</TableHead>
                     <TableHead>GAP (%)</TableHead>
                     <TableHead>Price Change (%)</TableHead>
                     
@@ -177,17 +179,20 @@ export default function IntradayPage() {
                         {trade.symbol}
                       </TableCell>
                       <TableCell className="text-left">
-                        {trade.lot}
+                        {trade.total_score}
                       </TableCell>
                        <TableCell className="text-left">
-                        {trade.gap}
+                        {trade.avg_in_oi}
+                      </TableCell>
+                       <TableCell className="text-left">
+                        {trade.gap_percent}
                       </TableCell>
                      
                         <TableCell >
                         <Badge className={trade.type === 'Long'
                           ? 'bg-green-600 text-white'
                           : 'bg-red-600 text-white'}>
-                        {trade.change.toFixed(2)}
+                        {trade.price_change_percent.toFixed(2)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-left">

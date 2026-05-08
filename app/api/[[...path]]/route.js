@@ -29,9 +29,9 @@ export async function OPTIONS() {
 // ROUTE HANDLER - Proxy to FastAPI Backend
 // ========================================
 // All API requests will be forwarded to your FastAPI backend
-// Configure FASTAPI_URL in .env file
+// Configure NEXT_PUBLIC_API_URL in .env file
 
-const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8000'
+const FASTAPI_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 async function handleRoute(request, { params }) {
   const { path = [] } = params

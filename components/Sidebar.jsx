@@ -21,6 +21,7 @@ const menuItems = [
     icon: BarChart3,
     links: [
       { name: 'Intraday', href: '/users/intraday' },
+      { name: 'NSE Momentum ', href: '/users/nse-momentum' },
       { name: 'Mid Day Brakeout', href: '/users/mid-day-brakeout' },
       { name: 'Swing Trade', href: '/users/swing-trade' },
       
