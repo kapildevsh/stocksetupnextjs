@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import Sidebar from '@/components/Sidebar'
 import { Button } from '@/components/ui/button'
+import { apiCall, logout } from '@/lib/api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { LogOut, Bell, RefreshCw, Clock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 
 export default function IntradayPage() {
   const router = useRouter()
@@ -17,18 +18,12 @@ export default function IntradayPage() {
   const [loading, setLoading] = useState(true)
 
  const fetchData = async () => {
+
   try {
 
-    const res = await fetch(`${API_BASE}/subscriber/nse/oi-live`, {
-      method: "GET",
-      credentials: "include",
+    const data = await apiCall("/subscriber/nse/oi-live", {
+      method: "GET"
     })
-
-    if (res.status === 401) {
-      throw new Error("Unauthorized")
-    }
-
-    const data = await res.json()
 
     console.log(data)
 
@@ -53,10 +48,6 @@ export default function IntradayPage() {
   } catch (err) {
 
     console.error(err)
-
-    alert("Session expired. Please login again.")
-
-    router.push("/")
 
   } finally {
 
@@ -116,15 +107,7 @@ export default function IntradayPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={async () => {
-
-  await fetch(`${API_BASE}/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-  })
-
-  router.push("/")
-}}
+                onClick={logout}
                 className="border-purple-200 hover:bg-purple-50"
               >
                 <LogOut className="h-4 w-4 mr-2" />
