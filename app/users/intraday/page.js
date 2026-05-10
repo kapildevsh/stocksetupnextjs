@@ -16,54 +16,57 @@ export default function IntradayPage() {
   const [intradayTrades, setIntradayTrades] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const fetchData = async () => {
-    try {
-      const token = localStorage.getItem("access_token")
-      console.log("TOKEN:", token)
-      // If token not yet available, just wait silently
-      if (!token) {
-        return
-      }
+ const fetchData = async () => {
+  try {
 
-      const res = await fetch(`${API_BASE}/subscriber/nse/oi-live`, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      })
+    const res = await fetch(`${API_BASE}/subscriber/nse/oi-live`, {
+      method: "GET",
+      credentials: "include",
+    })
 
-      if (res.status === 401) {
-        throw new Error("Unauthorized")
-      }
-
-      const data = await res.json()
-      console.log(data)
-
-      const mapped = data.map(row => ({
-        symbol: row.symbol,
-        time: new Date(row.createdtime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        LTP: Number(row.eq_lastPrice),
-        gap: Number(row.gap),
-        PChange: Number(row.eq_pChange),
-        avgInOI: Number(row.avgInOI),
-        volume: Number(row.volume),
-        total: Number(row.total),
-        status: "Active",
-        type: row.eq_pChange >= 0 ? "Long" : "Short"
-      }))
-
-      setIntradayTrades(mapped)
-    } catch (err) {
-      console.error(err)
-      alert("Session expired. Please login again.")
-      localStorage.clear()
-      router.push("/")
-    } finally {
-      setLoading(false)
+    if (res.status === 401) {
+      throw new Error("Unauthorized")
     }
+
+    const data = await res.json()
+
+    console.log(data)
+
+    const mapped = data.map(row => ({
+      symbol: row.symbol,
+      time: new Date(row.createdtime).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      LTP: Number(row.eq_lastPrice),
+      gap: Number(row.gap),
+      PChange: Number(row.eq_pChange),
+      avgInOI: Number(row.avgInOI),
+      volume: Number(row.volume),
+      total: Number(row.total),
+      status: "Active",
+      type: row.eq_pChange >= 0 ? "Long" : "Short"
+    }))
+
+    setIntradayTrades(mapped)
+
+  } catch (err) {
+
+    console.error(err)
+
+    alert("Session expired. Please login again.")
+
+    router.push("/")
+
+  } finally {
+
+    setLoading(false)
+
   }
+}
 
   useEffect(() => {
-    // Small delay so token is surely available
+   
     const timer = setTimeout(() => {
       fetchData()
     }, 300)
@@ -113,10 +116,15 @@ export default function IntradayPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  localStorage.clear()
-                  router.push("/")
-                }}
+                onClick={async () => {
+
+  await fetch(`${API_BASE}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  })
+
+  router.push("/")
+}}
                 className="border-purple-200 hover:bg-purple-50"
               >
                 <LogOut className="h-4 w-4 mr-2" />
