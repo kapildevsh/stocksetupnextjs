@@ -7,64 +7,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { LogOut, Bell, RefreshCw, Clock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { apiCall, logout } from '@/lib/api'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-
-export default function IntradayPage() {
-  const router = useRouter()
-  const [intradayTrades, setIntradayTrades] = useState([])
+export default function NseMomentumPage() {
+  const [trades, setTrades] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem("access_token")
-      console.log("TOKEN:", token)
-      // If token not yet available, just wait silently
-      if (!token) {
-        return
-      }
-
-      const res = await fetch(`${API_BASE}/subscriber/intraday/momentum-stocks`, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+      const data = await apiCall("/subscriber/intraday/momentum-stocks", {
+        method: "GET"
       })
-
-      if (res.status === 401) {
-        throw new Error("Unauthorized")
-      }
-
-      const data = await res.json()
-      console.log(data)
 
       const mapped = data.map(row => ({
         symbol: row.symbol,
-        total_score:  Number(row.total_score) ,
+        total_score: Number(row.total_score),
         gap_percent: Number(row.gap_percent),
         avg_in_oi: Number(row.avg_in_oi),
-        time: new Date(row.update_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        LTP: Number(row.eq_lastPrice),
         price_change_percent: Number(row.price_change_percent),
-        
-        volume: Number(row.volume),
         status: "Active",
-        type: row.change >= 0 ? "Long" : "Short"
+        type: row.price_change_percent >= 0 ? "Long" : "Short"
       }))
 
-      setIntradayTrades(mapped)
+      setTrades(mapped)
     } catch (err) {
       console.error(err)
-      alert("Session expired. Please login again.")
-      localStorage.clear()
-      router.push("/")
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    // Small delay so token is surely available
     const timer = setTimeout(() => {
       fetchData()
     }, 300)
@@ -78,17 +51,17 @@ export default function IntradayPage() {
   }, [])
 
   if (loading) {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-12 w-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-        <div className="text-lg font-semibold text-purple-700">
-          Loading live market data...
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="text-lg font-semibold text-purple-700">
+            Loading live market data...
+          </div>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
@@ -114,10 +87,7 @@ export default function IntradayPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  localStorage.clear()
-                  router.push("/")
-                }}
+                onClick={logout}
                 className="border-purple-200 hover:bg-purple-50"
               >
                 <LogOut className="h-4 w-4 mr-2" />
@@ -146,19 +116,18 @@ export default function IntradayPage() {
               <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 Most Active Top Gainer / Looser NSE Momentum Stocks
               </CardTitle>
-              <CardDescription>Powered by NSE Top Gainer / Looser , OI data & Active by Volume , Value</CardDescription>
+              <CardDescription>Powered by NSE Top Gainer / Looser , OI data &amp; Active by Volume , Value</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <colgroup>
-    <col className="w-[140px]" />
-    <col className="w-[120px]" />
-    <col className="w-[120px]" />
-    <col className="w-[120px]" />
-    <col className="w-[120px]" />
-    <col className="w-[120px]" />
-    <col className="w-[120px]" />
-  </colgroup>
+                  <col className="w-[140px]" />
+                  <col className="w-[120px]" />
+                  <col className="w-[120px]" />
+                  <col className="w-[120px]" />
+                  <col className="w-[120px]" />
+                  <col className="w-[120px]" />
+                </colgroup>
                 <TableHeader>
                   <TableRow className="bg-gradient-to-r from-purple-100 to-blue-100">
                     <TableHead>Symbol</TableHead>
@@ -166,14 +135,11 @@ export default function IntradayPage() {
                     <TableHead>Avg OI Change</TableHead>
                     <TableHead>GAP (%)</TableHead>
                     <TableHead>Price Change (%)</TableHead>
-                    
-                    <TableHead className="text-left">Volume</TableHead>
-                    <TableHead className="text-right">Time</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {intradayTrades.map((trade, idx) => (
+                  {trades.map((trade, idx) => (
                     <TableRow key={idx}>
                       <TableCell className="font-bold text-purple-700">
                         {trade.symbol}
@@ -181,28 +147,19 @@ export default function IntradayPage() {
                       <TableCell className="text-left">
                         {trade.total_score}
                       </TableCell>
-                       <TableCell className="text-left">
+                      <TableCell className="text-left">
                         {trade.avg_in_oi}
                       </TableCell>
-                       <TableCell className="text-left">
+                      <TableCell className="text-left">
                         {trade.gap_percent}
                       </TableCell>
-                     
-                        <TableCell >
+                      <TableCell>
                         <Badge className={trade.type === 'Long'
                           ? 'bg-green-600 text-white'
                           : 'bg-red-600 text-white'}>
-                        {trade.price_change_percent.toFixed(2)}
+                          {trade.price_change_percent.toFixed(2)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-left">
-                        {trade.volume}
-                      </TableCell>
-                      
-                     
-
-                      <TableCell className="text-right">{trade.time}</TableCell>
-                      
                       <TableCell>
                         <Badge className="bg-blue-600 text-white">
                           {trade.status}
